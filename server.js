@@ -45,19 +45,22 @@ const Chat = mongoose.model('Chat', chatSchema);
 // --- HARDCODED CREDENTIALS (As requested) ---
 const ADMINS = [
     { email: "sarkaranubhav48@gmail.com", name: "Nexus Admin", pass: "admin123" },
-    { email: "rudranilbera313@gmail.com", name: "Nexus Admin", pass: "rudra123" }
+    { email: "admin1@nexus.com", name: "Nexus Admin", pass: "rudra123" },
+    { email: "rudranilbera313@gmail.com", name: "Nexus Admin", pass: "rudra123" },
+    { email: "admin2@nexus.com", name: "Nexus Admin", pass: "admin2" }
 ];
 
 const CAPTAINS = [
-    { email: "riturajjj10@gmail.com", name: "Storm Hunters", pass: "roni123" },
-    { email: "asheshchatterjee.2016@gmail.com", name: "UNDERDOG FC", pass: "ashesh123" },
-    { email: "anishdgp0104@gmail.com", name: "FlameBorn Kings", pass: "anish123" },
-    { email: "sunnyghoshdastidar506@gmail.com", name: "Wrath Of Wings", pass: "piyush123" },
-    { email: "kunduarnab7439@gmail.com", name: "PANDAVA", pass: "arnab123" },
-    { email: "pariasaikat94@gmail.com", name: "Destroyers", pass: "saikat123" },
-    { email: "cjoy7970@gmail.com", name: "Madrid Warriors", pass: "joy123" },
-    { email: "sammondal888@gmail.com", name: "Black Panthers FC", pass: "sam123" },
-    { email: "sarkaranubhav32@gmail.com", name: "Black", pass: "anu123" }
+    { email: "aj@nexus.com", name: "Storm Hunters", pass: "aj123" },
+    { email: "dj@nexus.com", name: "UNDERDOG FC", pass: "dj123" },
+    { email: "bj@nexus.com", name: "FlameBorn Kings", pass: "bj123" },
+    { email: "cj@nexus.com", name: "Wrath Of Wings", pass: "cj123" },
+    { email: "fj@nexus.com", name: "PANDAVA", pass: "fj123" },
+    { email: "pj@nexus.com", name: "Destroyers", pass: "pj23" },
+    { email: "kj@nexus.com", name: "Madrid Warriors", pass: "kj123" },
+    { email: "mj@nexus.com", name: "Black Panthers FC", pass: "mj123" },
+    { email: "nj@nexus.com", name: "Black", pass: "nj123" },
+    { email: "qj@nexus.com", name: "Black", pass: "qj123" }
     
 ];
 
@@ -182,26 +185,29 @@ io.on('connection', async (socket) => {
 
     
 
-    // 2. Special Sign In (Captain/Admin)
+    // 2. Direct Sign In (Captain/Admin) - OTP REMOVED
     socket.on('specialSignIn', async ({ email, password, type }) => {
         const list = type === 'admin' ? ADMINS : CAPTAINS;
         const entry = list.find(u => u.email === email && u.pass === password);
         
         if (entry) {
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            await User.findOneAndUpdate(
+            // Update or Create the user in DB, but mark as verified immediately
+            const user = await User.findOneAndUpdate(
                 { email },
                 { 
                     name: entry.name, 
                     role: type, 
-                    otp, 
-                    otpExpires: Date.now() + 600000, 
                     isVerified: true 
                 },
-                { upsert: true }
+                { upsert: true, new: true }
             );
-            await sendOTPEmail(email, otp);
-            socket.emit('authStep', 'otp_verify');
+
+            // Directly send login success instead of 'otp_verify'
+            socket.emit('loginSuccess', { 
+                name: user.name, 
+                role: user.role, 
+                email: user.email 
+            });
         } else {
             socket.emit('errorMsg', "Invalid Authorized Credentials");
         }
