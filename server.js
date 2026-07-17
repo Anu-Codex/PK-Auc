@@ -61,15 +61,7 @@ const CAPTAINS = [
     
 ];
 
-// --- AUTH UTILITIES ---
-async function sendOTPEmail(email, otp) {
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = "Nexus Legends Verification Code";
-    sendSmtpEmail.htmlContent = `<html><body><h1>Your OTP: ${otp}</h1><p>Use this code to verify your account.</p></body></html>`;
-    sendSmtpEmail.sender = { "name": "Nexus Legends", "email": process.env.BREVO_SENDER_EMAIL };
-    sendSmtpEmail.to = [{ "email": email }];
-    return apiInstance.sendTransacEmail(sendSmtpEmail);
-}
+
 
 // --- AUTOMATIC TEAM SEEDING ---
 const teamList = [
@@ -215,27 +207,6 @@ io.on('connection', async (socket) => {
         }
     });
 
-    // 3. Verify OTP
-    socket.on('verifyOTP', async ({ email, otp }) => {
-        try {
-            const user = await User.findOne({ 
-                email, 
-                otp, 
-                otpExpires: { $gt: Date.now() } 
-            });
-
-            if (user) {
-                user.isVerified = true;
-                user.otp = undefined;
-                await user.save();
-                socket.emit('loginSuccess', { name: user.name, role: user.role, email: user.email });
-            } else {
-                socket.emit('errorMsg', "Invalid or Expired OTP");
-            }
-        } catch (err) {
-            socket.emit('errorMsg', "Verification Error");
-        }
-    });
 
     // --- PREVIOUS AUCTION FUNCTIONS (UNTOUCHED) ---
 
