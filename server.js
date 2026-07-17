@@ -76,7 +76,8 @@ const teamList = [
     { name: "Destroyers", budget: 2000 },
     { name: "Madrid Warriors", budget: 2000 },
     { name: "Black Panthers FC", budget: 2000 },
-    { name: "Black", budget: 2000 }
+    { name: "Black", budget: 2000 },
+    { name: "White", budget: 2000 }
 ];
 
 async function seedTeams() {
