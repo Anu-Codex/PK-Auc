@@ -4,7 +4,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
 const bcrypt = require('bcryptjs');
 
 const app = express();
@@ -13,12 +12,6 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log("✅ Connected to MongoDB"));
-
-// --- BREVO CONFIG ---
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 // --- SCHEMAS ---
 const userSchema = new mongoose.Schema({
