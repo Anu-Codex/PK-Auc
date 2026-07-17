@@ -45,7 +45,7 @@ const Chat = mongoose.model('Chat', chatSchema);
 // --- HARDCODED CREDENTIALS (As requested) ---
 const ADMINS = [
     { email: "sarkaranubhav48@gmail.com", name: "Nexus Admin", pass: "admin123" },
-    { email: "admin1@nexus.com", name: "Nexus Admin", pass: "rudra123" },
+    { email: "admin1@nexus.com", name: "Nexus Admin", pass: "admin1" },
     { email: "rudranilbera313@gmail.com", name: "Nexus Admin", pass: "rudra123" },
     { email: "admin2@nexus.com", name: "Nexus Admin", pass: "admin2" }
 ];
